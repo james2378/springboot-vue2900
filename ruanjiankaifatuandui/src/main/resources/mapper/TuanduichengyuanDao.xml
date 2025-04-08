@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dao.TuanduichengyuanDao">
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        a.id as id
+        ,a.tuandui_id as tuanduiId
+        ,a.tuanduichengyuan_name as tuanduichengyuanName
+        ,a.tuanduichengyuan_photo as tuanduichengyuanPhoto
+        ,a.tuanduichengyuan_types as tuanduichengyuanTypes
+        ,a.tuanduichengyuan_zhidaojiaoshi as tuanduichengyuanZhidaojiaoshi
+        ,a.tuanduichengyuan_chengyuan as tuanduichengyuanChengyuan
+        ,a.tuanduichengyuan_xiangmu as tuanduichengyuanXiangmu
+        ,a.jiuye_types as jiuyeTypes
+        ,a.tuanduichengyuan_qiye as tuanduichengyuanQiye
+        ,a.create_time as createTime
+    </sql>
+    <select id="selectListView" parameterType="map" resultType="com.entity.view.TuanduichengyuanView" >
+        SELECT
+        <include refid="Base_Column_List" />
+
+--         级联表的字段
+        ,tuandui.tuandui_name as tuanduiName
+        ,tuandui.tuandui_types as tuanduiTypes
+        ,tuandui.tuandui_photo as tuanduiPhoto
+        ,tuandui.tuandui_zuzhi as tuanduiZuzhi
+        ,tuandui.tuandui_file as tuanduiFile
+        ,tuandui.tuandui_text as tuanduiText
+        ,tuandui.tuandui_content as tuanduiContent
+
+        FROM tuanduichengyuan  a
+        left JOIN tuandui tuandui ON a.tuandui_id = tuandui.id
+
+        <where>
+            <if test="params.ids != null">
+                and a.id in
+                <foreach item="item" index="index" collection="params.ids" open="(" separator="," close=")">
+                #{item}
+                </foreach>
+            </if>
+            <if test="params.tuanduiId != null and params.tuanduiId != ''">
+                and (
+                    a.tuandui_id = #{params.tuanduiId}
+                )
+            </if>
+            <if test=" params.tuanduichengyuanName != '' and params.tuanduichengyuanName != null and params.tuanduichengyuanName != 'null' ">
+                and a.tuanduichengyuan_name like CONCAT('%',#{params.tuanduichengyuanName},'%')
+            </if>
+            <if test="params.tuanduichengyuanTypes != null and params.tuanduichengyuanTypes != ''">
+                and a.tuanduichengyuan_types = #{params.tuanduichengyuanTypes}
+            </if>
+            <if test=" params.tuanduichengyuanZhidaojiaoshi != '' and params.tuanduichengyuanZhidaojiaoshi != null and params.tuanduichengyuanZhidaojiaoshi != 'null' ">
+                and a.tuanduichengyuan_zhidaojiaoshi like CONCAT('%',#{params.tuanduichengyuanZhidaojiaoshi},'%')
+            </if>
+            <if test=" params.tuanduichengyuanChengyuan != '' and params.tuanduichengyuanChengyuan != null and params.tuanduichengyuanChengyuan != 'null' ">
+                and a.tuanduichengyuan_chengyuan like CONCAT('%',#{params.tuanduichengyuanChengyuan},'%')
+            </if>
+            <if test=" params.tuanduichengyuanXiangmu != '' and params.tuanduichengyuanXiangmu != null and params.tuanduichengyuanXiangmu != 'null' ">
+                and a.tuanduichengyuan_xiangmu like CONCAT('%',#{params.tuanduichengyuanXiangmu},'%')
+            </if>
+            <if test="params.jiuyeTypes != null and params.jiuyeTypes != ''">
+                and a.jiuye_types = #{params.jiuyeTypes}
+            </if>
+            <if test=" params.tuanduichengyuanQiye != '' and params.tuanduichengyuanQiye != null and params.tuanduichengyuanQiye != 'null' ">
+                and a.tuanduichengyuan_qiye like CONCAT('%',#{params.tuanduichengyuanQiye},'%')
+            </if>
+
+                <!-- 判断团队信息的id不为空 -->
+            <if test=" params.tuanduiIdNotNull != '' and params.tuanduiIdNotNull != null and params.tuanduiIdNotNull != 'null' ">
+                and a.tuandui_id IS NOT NULL
+            </if>
+            <if test=" params.tuanduiName != '' and params.tuanduiName != null and params.tuanduiName != 'null' ">
+                and tuandui.tuandui_name like CONCAT('%',#{params.tuanduiName},'%')
+            </if>
+            <if test="params.tuanduiTypes != null  and params.tuanduiTypes != ''">
+                and tuandui.tuandui_types = #{params.tuanduiTypes}
+            </if>
+
+            <if test=" params.tuanduiZuzhi != '' and params.tuanduiZuzhi != null and params.tuanduiZuzhi != 'null' ">
+                and tuandui.tuandui_zuzhi like CONCAT('%',#{params.tuanduiZuzhi},'%')
+            </if>
+            <if test=" params.tuanduiText != '' and params.tuanduiText != null and params.tuanduiText != 'null' ">
+                and tuandui.tuandui_text like CONCAT('%',#{params.tuanduiText},'%')
+            </if>
+            <if test=" params.tuanduiContent != '' and params.tuanduiContent != null and params.tuanduiContent != 'null' ">
+                and tuandui.tuandui_content like CONCAT('%',#{params.tuanduiContent},'%')
+            </if>
+        </where>
+
+        order by a.${params.orderBy} desc 
+    </select>
+
+</mapper>

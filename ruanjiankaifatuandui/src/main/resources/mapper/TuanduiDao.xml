@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dao.TuanduiDao">
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        a.id as id
+        ,a.tuandui_name as tuanduiName
+        ,a.tuandui_types as tuanduiTypes
+        ,a.tuandui_photo as tuanduiPhoto
+        ,a.tuandui_zuzhi as tuanduiZuzhi
+        ,a.tuandui_file as tuanduiFile
+        ,a.tuandui_text as tuanduiText
+        ,a.tuandui_content as tuanduiContent
+        ,a.create_time as createTime
+    </sql>
+    <select id="selectListView" parameterType="map" resultType="com.entity.view.TuanduiView" >
+        SELECT
+        <include refid="Base_Column_List" />
+
+--         级联表的字段
+
+        FROM tuandui  a
+
+        <where>
+            <if test="params.ids != null">
+                and a.id in
+                <foreach item="item" index="index" collection="params.ids" open="(" separator="," close=")">
+                #{item}
+                </foreach>
+            </if>
+            <if test=" params.tuanduiName != '' and params.tuanduiName != null and params.tuanduiName != 'null' ">
+                and a.tuandui_name like CONCAT('%',#{params.tuanduiName},'%')
+            </if>
+            <if test="params.tuanduiTypes != null and params.tuanduiTypes != ''">
+                and a.tuandui_types = #{params.tuanduiTypes}
+            </if>
+            <if test=" params.tuanduiZuzhi != '' and params.tuanduiZuzhi != null and params.tuanduiZuzhi != 'null' ">
+                and a.tuandui_zuzhi like CONCAT('%',#{params.tuanduiZuzhi},'%')
+            </if>
+            <if test=" params.tuanduiText != '' and params.tuanduiText != null and params.tuanduiText != 'null' ">
+                and a.tuandui_text like CONCAT('%',#{params.tuanduiText},'%')
+            </if>
+            <if test=" params.tuanduiContent != '' and params.tuanduiContent != null and params.tuanduiContent != 'null' ">
+                and a.tuandui_content like CONCAT('%',#{params.tuanduiContent},'%')
+            </if>
+
+        </where>
+
+        order by a.${params.orderBy} desc 
+    </select>
+
+</mapper>
